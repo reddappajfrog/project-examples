@@ -46,7 +46,13 @@
             </plugin>
         </plugins>
     </build>
-
+<distributionManagement>
+    <repository>
+        <id>central</id>
+        <name>a0tg0wbq3eef3-artifactory-primary-0-releases</name>
+        <url>https://reddappa.jfrog.io/artifactory/teamcity-libs-release-local</url>
+    </repository>
+</distributionManagement>
     <dependencies>
         <dependency>
             <groupId>org.apache.commons</groupId>
