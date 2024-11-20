@@ -16,7 +16,7 @@ jobs:
           # JFrog Platform access token 
           JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
 
-          # Basic authentication credentials
+          # Basic authentication credentials r
           ## JF_USER: ${{ secrets.JF_USER }}
           ## JF_PASSWORD: ${{ secrets.JF_PASSWORD }}
 
