@@ -47,7 +47,7 @@ jobs:
           # Authenticate JFrog CLI
           jfrog rt config artifactory-server --interactive=false
           # Upload build artifacts (adjust paths as necessary)
-          jfrog rt upload "dist/**/*" "npm-repo-name/path-to-store-artifacts/" --build-name=my-npm-build --build-number=${{ github.run_number }}
+          jfrog rt upload "dist/**/*" "cli-npm/test-red/" --build-name=my-npm-build --build-number=${{ github.run_number }}
           
       # Step 7: Publish build info to Artifactory (Optional but useful for Xray scans)
       - name: Publish Build Info
