@@ -1,0 +1,55 @@
+name: Build and Publish to JFrog Artifactory
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16' # Specify your required Node.js version
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Run build
+      - name: Build the project
+        run: npm run build
+
+      # Step 5: Set up JFrog CLI
+      - name: Set up JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v2
+        with:
+          version: '2.45.0' # Specify JFrog CLI version
+          server-id: 'artifactory-server'
+          url: ${{ secrets.JFROG_URL }}
+          username: ${{ secrets.JFROG_USERNAME }}
+          password: ${{ secrets.JFROG_PASSWORD }}
+
+      # Step 6: Publish artifacts to Artifactory
+      - name: Publish to JFrog Artifactory
+        run: |
+          # Authenticate JFrog CLI
+          jfrog rt config artifactory-server --interactive=false
+          # Upload build artifacts (adjust paths as necessary)
+          jfrog rt upload "dist/**/*" "npm-repo-name/path-to-store-artifacts/" --build-name=my-npm-build --build-number=${{ github.run_number }}
+          
+      # Step 7: Publish build info to Artifactory (Optional but useful for Xray scans)
+      - name: Publish Build Info
+        run: |
+          jfrog rt build-publish my-npm-build ${{ github.run_number }}
