@@ -1,0 +1,39 @@
+name: Docker Image Promote via Artifactory
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  promote-docker-image:
+    runs-on: ubuntu-latest
+
+    env:
+      ARTIFACTORY_URL: your-domain.jfrog.io
+      ARTIFACTORY_REPO_LOCAL: docker-local     # your local repo
+      ARTIFACTORY_REPO_REMOTE: docker-remote   # your remote repo (proxying DockerHub)
+      IMAGE_NAME: alpine                       # example image from DockerHub
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to Artifactory Docker registry
+        run: |
+          echo "${{ secrets.ARTIFACTORY_PASSWORD }}" | docker login ${{ env.ARTIFACTORY_URL }} -u ${{ secrets.ARTIFACTORY_USERNAME }} --password-stdin
+
+      - name: Pull image from DockerHub via Artifactory remote
+        run: |
+          docker pull ${{ env.ARTIFACTORY_URL }}/${{ env.ARTIFACTORY_REPO_REMOTE }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Tag image with build number
+        run: |
+          docker tag \
+            ${{ env.ARTIFACTORY_URL }}/${{ env.ARTIFACTORY_REPO_REMOTE }}/${{ env.IMAGE_NAME }}:latest \
+            ${{ env.ARTIFACTORY_URL }}/${{ env.ARTIFACTORY_REPO_LOCAL }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
+
+      - name: Push tagged image to Artifactory local repo
+        run: |
+          docker push ${{ env.ARTIFACTORY_URL }}/${{ env.ARTIFACTORY_REPO_LOCAL }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}
