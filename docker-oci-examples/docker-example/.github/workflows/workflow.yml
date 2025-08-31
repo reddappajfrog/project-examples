@@ -11,9 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ARTIFACTORY_URL: your-domain.jfrog.io
-      ARTIFACTORY_REPO_LOCAL: docker-local     # your local repo
-      ARTIFACTORY_REPO_REMOTE: docker-remote   # your remote repo (proxying DockerHub)
+      ARTIFACTORY_URL: http://migration3.jfrog.io/
+      ARTIFACTORY_REPO_LOCAL: demo-docker     # your local repo
+      ARTIFACTORY_REPO_REMOTE: demo-docker   # your remote repo (proxying DockerHub)
       IMAGE_NAME: alpine                       # example image from DockerHub
 
     steps:
@@ -22,7 +22,7 @@ jobs:
 
       - name: Log in to Artifactory Docker registry
         run: |
-          echo "${{ secrets.ARTIFACTORY_PASSWORD }}" | docker login ${{ env.ARTIFACTORY_URL }} -u ${{ secrets.ARTIFACTORY_USERNAME }} --password-stdin
+          echo "${{ secrets.JFROG_PASSWORD }}" | docker login ${{ env.ARTIFACTORY_URL }} -u ${{ secrets.JFROG_USERNAME }} --password-stdin
 
       - name: Pull image from DockerHub via Artifactory remote
         run: |
